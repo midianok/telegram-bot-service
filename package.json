@@ -1,0 +1,13 @@
+{
+  "name": "telegram-bot-service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "tsc": "./node_modules/.bin/tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {}
+}

@@ -10,7 +10,6 @@ export class ReplyOperation implements Operation {
     logger: Logger;
 
     constructor() {
-
         this.repository = new Repository();
         this.logger = new Logger();
     }

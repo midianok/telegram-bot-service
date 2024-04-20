@@ -15,6 +15,4 @@ COPY --from=build /build/package.json ./
 COPY --from=build /build/dist ./
 RUN yarn --prod
 
-VOLUME /app/data
-
 ENTRYPOINT ["node", "index.js"]

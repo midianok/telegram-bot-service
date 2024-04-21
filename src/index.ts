@@ -1,9 +1,10 @@
 import { Telegraf } from 'telegraf';
-import winston, { format } from 'winston';
+import winston from 'winston';
 import dotenv from 'dotenv';
 import { InlineVoiceOperation } from "./operations/InlineVoiceOperation.js";
 import { Operation } from "./operations/Operation.js";
 import { ReplyOperation } from "./operations/ReplyOperation.js";
+import { ImageDistortionOperation } from "./operations/ImageDistortionOperation.js";
 dotenv.config();
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console()] });
@@ -28,6 +29,10 @@ if (process.env.INLINE_VOICE_ENABLED) {
 
 if (process.env.REPLY_ENABLED) {
     operations.push(new ReplyOperation());
+}
+
+if (process.env.IMAGE_DISTORTION) {
+    operations.push(new ImageDistortionOperation());
 }
 
 for (const operation of operations) {

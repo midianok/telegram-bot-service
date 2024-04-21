@@ -8,6 +8,7 @@ services:
       BOT_TOKEN: ""
       INLINE_VOICE_ENABLED: true
       REPLY_ENABLED: false
+      IMAGE_DISTORTION:
       WEBHOOK_URL:
       WEBHOOK_PORT:
     volumes:

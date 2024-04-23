@@ -3,18 +3,24 @@ import { Operation } from "./Operation.js";
 import { Magick } from 'magickwand.js';
 import fetch from 'node-fetch';
 
+type TelegramPhoto = {
+    file_id: string,
+    file_size: number
+}
+
 export class ImageDistortionOperation implements Operation {
 
     async register(bot: Telegraf<Context>): Promise<void> {
         bot.hears(/нука|Нука|жмыхни|Жмыхни/, async (ctx, next) => {
-            const imageIds : { file_id: string, file_size: number }[] = ctx.update.message.reply_to_message["photo"];
+            const imageIds : TelegramPhoto[] = ctx.update.message.reply_to_message["photo"];
             if (!imageIds){
                 return next();
             }
 
-            const mostQuality = imageIds.reduce((prev, current) => prev.file_size > current.file_size ? prev : current)
+            const bestQuality =
+                imageIds.reduce((prev, current) => prev.file_size > current.file_size ? prev : current)
 
-            const fileMeta = await fetch(`https://api.telegram.org/bot${ctx.telegram.token}/getFile?file_id=${mostQuality.file_id}`)
+            const fileMeta = await fetch(`https://api.telegram.org/bot${ctx.telegram.token}/getFile?file_id=${bestQuality.file_id}`)
                 .then(result => result.json());
 
             // @ts-ignore

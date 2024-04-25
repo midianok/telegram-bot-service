@@ -1,29 +1,21 @@
-import { Telegraf, Context } from "telegraf";
+import { Bot, InputFile } from "grammy";
 import { Operation } from "./Operation.js";
 import fetch from 'node-fetch';
-
-type TelegramPhoto = {
-    file_id: string,
-    file_size: number
-}
 
 export class ImageDistortionOperation implements Operation {
     imageManipulationServiceUrl: string;
     constructor() {
         this.imageManipulationServiceUrl = process.env.IMAGE_MANIPULATION_SERVICE_URL;
     }
-    async register(bot: Telegraf<Context>): Promise<void> {
+    async register(bot: Bot): Promise<void> {
         bot.hears(/нука|Нука|жмыхни|Жмыхни/, async (ctx, next) => {
             const file = this.getFile(ctx.update.message?.reply_to_message);
             if (!file){
-                return next();
+                await next();
             }
 
-            const fileMeta = await fetch(`https://api.telegram.org/bot${ctx.telegram.token}/getFile?file_id=${file.fileId}`)
-                .then(result => result.json());
-
-            // @ts-ignore
-            const binary = await fetch(`https://api.telegram.org/file/bot${ctx.telegram.token}/${fileMeta.result.file_path}`)
+            const fileMeta = await ctx.api.getFile(file.fileId);
+            const binary = await fetch(`https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${fileMeta.file_path}`)
                 .then( result => result.arrayBuffer());
 
             let url: string;
@@ -33,7 +25,7 @@ export class ImageDistortionOperation implements Operation {
             if (file.type === 'video' || file.type == 'videoNote'){
                 url = 'image/distort-video';
             }
-            const t = JSON.stringify({ base64: Buffer.from(binary).toString('base64')});
+
             const result = await fetch(`${this.imageManipulationServiceUrl}/${url}`, {
                 method: 'POST',
                 body: JSON.stringify({ base64: Buffer.from(binary).toString('base64')}),
@@ -42,19 +34,18 @@ export class ImageDistortionOperation implements Operation {
 
             // @ts-ignore
             if (!result.base64){
-                return next();
+                await next();
             }
 
             // @ts-ignore
-            const imgbase = Buffer.from(result.base64, 'base64');
-
+            const fileBuffer = Buffer.from(result.base64, 'base64');
             if (file.type === 'image'){
                 // @ts-ignore
-                await ctx.replyWithPhoto({ source: imgbase }, { reply_to_message_id: ctx.message.message_id })
+                await ctx.replyWithPhoto(new InputFile(fileBuffer), { reply_to_message_id: ctx.message.message_id })
             }
             if (file.type === 'video' || file.type == 'videoNote'){
                 // @ts-ignore
-                await ctx.replyWithAnimation({ source: imgbase }, { reply_to_message_id: ctx.message.message_id })
+                await ctx.replyWithAnimation(new InputFile(fileBuffer), { reply_to_message_id: ctx.message.message_id })
             }
         });
     }

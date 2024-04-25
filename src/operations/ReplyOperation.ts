@@ -1,5 +1,4 @@
-import { Telegraf, Context } from "telegraf";
-import { Update } from "telegraf/typings/core/types/typegram.js";
+import {Api, Bot, Context, RawApi} from "grammy";
 import { Operation } from "./Operation.js";
 import { Repository } from "../repository/Repository.js";
 import { Logger } from "../infrastructure/Logger.js";
@@ -7,19 +6,17 @@ import { getRandomElement, probability } from "../infrastructure/Utils.js";
 
 export class ReplyOperation implements Operation {
     repository: Repository;
-    logger: Logger;
 
     constructor() {
         this.repository = new Repository();
-        this.logger = new Logger();
     }
 
-    async register(bot: Telegraf<Context<Update>>): Promise<void> {
+    async register(bot): Promise<void> {
         const replyRules = await this.repository.getReplyRules();
 
         for (const rule of replyRules) {
             if (rule.stickerIds.length === 0 && rule.replyMessages.length == 0) {
-                this.logger.info("replies is empty");
+                Logger.info("replies is empty");
                 continue;
             }
 
@@ -27,7 +24,7 @@ export class ReplyOperation implements Operation {
                 const userIdMatch = rule.userId ? rule.userId === ctx.update.message.from.id : true;
                 const hits = rule.probability ? probability(rule.probability) : true;
                 if (ctx.update.message.from.is_bot || !userIdMatch || !hits) {
-                    return next();
+                    await next();
                 }
 
                 const replies: { type: string, value: string }[] = [];
@@ -42,12 +39,12 @@ export class ReplyOperation implements Operation {
 
                 if (result.type === 'text') {
                     await ctx.reply(result.value, { reply_parameters: { message_id: ctx.message.message_id} } );
-                    this.logger.info("Reply with text success", {...ctx.update.message, reply: result.value});
+                    Logger.info("Reply with text success", {...ctx.update.message, reply: result.value});
                 }
 
                 if (result.type === 'sticker') {
                     await ctx.replyWithSticker(result.value, { reply_parameters: { message_id: ctx.message.message_id} } );
-                    this.logger.info("reply with sticker success", {...ctx.update.message, reply: result.value});
+                    Logger.info("reply with sticker success", {...ctx.update.message, reply: result.value});
                 }
             })
         }

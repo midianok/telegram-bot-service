@@ -1,40 +1,42 @@
-import { Telegraf } from 'telegraf';
+import {Bot, Context, NextFunction} from "grammy";
 import winston from 'winston';
 import dotenv from 'dotenv';
 import { InlineVoiceOperation } from "./operations/InlineVoiceOperation.js";
-import { Operation } from "./operations/Operation.js";
 import { ReplyOperation } from "./operations/ReplyOperation.js";
 import { ImageDistortionOperation } from "./operations/ImageDistortionOperation.js";
+import { errorHandling } from "./middleware/ErrorHandlerMiddleware.js"
+import { Logger } from "./infrastructure/Logger.js";
 dotenv.config();
 
-const logger = winston.createLogger({ transports: [new winston.transports.Console()] });
+const bot = new Bot(process.env.BOT_TOKEN);
+bot.use( async (ctx: Context, next: NextFunction ) => {
+    Logger.info("request", ctx);
+    await next()
+})
 
-const bot = new Telegraf(process.env.BOT_TOKEN);
-process.once('SIGINT', () => bot.stop('SIGINT'))
-process.once('SIGTERM', () => bot.stop('SIGTERM'))
+bot.use(errorHandling)
 
-if (process.env.WWEBHOOK_URL){
-    bot.launch({ webhook: { domain: process.env.WEBHOOK_URL, port: Number(process.env.WEBHOOK_PORT) || 80 } }).then(() => logger.info("Stopped"));
-    logger.info(`App started webhook "${process.env.WEBHOOK_URL}" listening on port ${process.env.WEBHOOK_PORT}`)
-}
-else {
-    bot.launch().then(() => logger.info("Stopped"));
-    logger.info('App started with polling')
-}
-
-const operations: Operation[] = []
 if (process.env.INLINE_VOICE_ENABLED) {
-    operations.push(new InlineVoiceOperation());
+     await new InlineVoiceOperation().register(bot);
 }
 
 if (process.env.REPLY_ENABLED) {
-    operations.push(new ReplyOperation());
+    await new ReplyOperation().register(bot);
 }
 
 if (process.env.IMAGE_DISTORTION) {
-    operations.push(new ImageDistortionOperation());
+    await new ImageDistortionOperation().register(bot);
 }
 
-for (const operation of operations) {
-    await operation.register(bot);
-}
+bot.catch(x => {
+    console.log(x.message)
+});
+
+process.once('SIGINT', () => bot.stop());
+process.once('SIGTERM', () => bot.stop());
+
+bot.start();
+bot.catch((err) => {
+    const ctx = err.ctx;
+    console.error(`Error while handling update ${ctx.update.update_id}:`);
+});

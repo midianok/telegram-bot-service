@@ -1,5 +1,5 @@
-import { Context, Telegraf } from "telegraf";
+import {Api, Bot, Context, RawApi} from "grammy";
 
 export interface Operation {
-    register(bot: Telegraf<Context>): Promise<void>
+    register(bot: Bot): Promise<void>
 }

@@ -1,5 +1,5 @@
 import { Context, NextFunction } from "grammy";
-import {Logger} from "../infrastructure/Logger.js";
+import { Logger } from "../infrastructure/Logger.js";
 
 export async function errorHandling(ctx: Context, next: NextFunction ): Promise<void> {
     try{

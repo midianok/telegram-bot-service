@@ -1,17 +1,12 @@
-import {Bot, Context, NextFunction} from "grammy";
+import { Bot } from "grammy";
 import dotenv from 'dotenv';
 import { InlineVoiceOperation } from "./operations/InlineVoiceOperation.js";
 import { ReplyOperation } from "./operations/ReplyOperation.js";
 import { ImageDistortionOperation } from "./operations/ImageDistortionOperation.js";
 import { errorHandling } from "./middleware/ErrorHandlerMiddleware.js"
-import { Logger } from "./infrastructure/Logger.js";
 dotenv.config();
 
 const bot = new Bot(process.env.BOT_TOKEN);
-bot.use( async (ctx: Context, next: NextFunction ) => {
-    Logger.info("request", ctx);
-    await next()
-})
 
 bot.use(errorHandling)
 

@@ -1,4 +1,4 @@
-import winston, {transports} from "winston";
+import winston from "winston";
 
 export class Logger {
     private static instance: winston.Logger;

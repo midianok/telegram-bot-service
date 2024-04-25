@@ -1,5 +1,4 @@
 import {Bot, Context, NextFunction} from "grammy";
-import winston from 'winston';
 import dotenv from 'dotenv';
 import { InlineVoiceOperation } from "./operations/InlineVoiceOperation.js";
 import { ReplyOperation } from "./operations/ReplyOperation.js";

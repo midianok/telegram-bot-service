@@ -5,12 +5,11 @@ services:
     build: .
     image: midianok/telegram-bot-service:latest
     environment:
-      BOT_TOKEN: ""
-      INLINE_VOICE_ENABLED: true
-      REPLY_ENABLED: false
-      IMAGE_DISTORTION:
-      WEBHOOK_URL:
-      WEBHOOK_PORT:
+      BOT_TOKEN: ${BOT_TOKEN}
+      INLINE_VOICE_ENABLED: ${INLINE_VOICE_ENABLED}
+      REPLY_ENABLED: ${REPLY_ENABLED}
+      IMAGE_DISTORTION: ${IMAGE_DISTORTION}
+      OWNER_ID: ${OWNER_ID}
     volumes:
       - "./data:/app/data"
 

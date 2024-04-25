@@ -11,7 +11,7 @@ export class ImageDistortionOperation implements Operation {
         bot.hears(/нука|Нука|жмыхни|Жмыхни/, async (ctx, next) => {
             const file = this.getFile(ctx.update.message?.reply_to_message);
             if (!file){
-                await next();
+                return await next();
             }
 
             const fileMeta = await ctx.api.getFile(file.fileId);
@@ -34,7 +34,7 @@ export class ImageDistortionOperation implements Operation {
 
             // @ts-ignore
             if (!result.base64){
-                await next();
+                return await next();
             }
 
             // @ts-ignore

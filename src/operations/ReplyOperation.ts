@@ -23,7 +23,7 @@ export class ReplyOperation implements Operation {
                 const userIdMatch = rule.userId ? rule.userId === ctx.update.message.from.id : true;
                 const hits = rule.probability ? probability(rule.probability) : true;
                 if (ctx.update.message.from.is_bot || !userIdMatch || !hits) {
-                    await next();
+                    return await next();
                 }
 
                 const replies: { type: string, value: string }[] = [];

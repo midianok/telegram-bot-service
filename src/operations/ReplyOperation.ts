@@ -2,6 +2,7 @@ import { Operation } from "./Operation.js";
 import { Repository } from "../repository/Repository.js";
 import { Logger } from "../infrastructure/Logger.js";
 import { getRandomElement, probability } from "../infrastructure/Utils.js";
+import {Bot} from "grammy";
 
 export class ReplyOperation implements Operation {
     repository: Repository;
@@ -10,7 +11,7 @@ export class ReplyOperation implements Operation {
         this.repository = new Repository();
     }
 
-    async register(bot): Promise<void> {
+    async register(bot: Bot): Promise<void> {
         const replyRules = await this.repository.getReplyRules();
 
         for (const rule of replyRules) {
@@ -19,7 +20,7 @@ export class ReplyOperation implements Operation {
                 continue;
             }
 
-            bot.hears(rule.regexPattern, async (ctx, next) => {
+            bot.hears(new RegExp(rule.regexPattern), async (ctx, next) => {
                 const userIdMatch = rule.userId ? rule.userId === ctx.update.message.from.id : true;
                 const hits = rule.probability ? probability(rule.probability) : true;
                 if (ctx.update.message.from.is_bot || !userIdMatch || !hits) {

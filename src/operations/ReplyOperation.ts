@@ -2,7 +2,7 @@ import { Operation } from "./Operation.js";
 import { Repository } from "../repository/Repository.js";
 import { Logger } from "../infrastructure/Logger.js";
 import { getRandomElement, probability } from "../infrastructure/Utils.js";
-import {Bot} from "grammy";
+import { Bot } from "grammy";
 
 export class ReplyOperation implements Operation {
     repository: Repository;

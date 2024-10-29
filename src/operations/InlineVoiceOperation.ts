@@ -5,7 +5,7 @@ import { Operation } from "./Operation";
 import { InlineVoice } from "../repository/entities/InlineVoice.js";
 
 export class InlineVoiceOperation implements Operation {
-    voices: InlineVoice[];
+    voices: InlineVoice[] = [];
 
     async register(bot: Bot): Promise<void> {
         if (this.voices || this.voices.length === 0) {

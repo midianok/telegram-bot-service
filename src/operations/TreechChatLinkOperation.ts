@@ -18,8 +18,8 @@ export class TreechChatLinkOperation implements Operation {
             return false;
         }
 
-        const linkMessage = ["ссылк", "дайти линк"];
-        const matches = linkMessage.filter(x => message.includes(x)).length;
+        const linkMessage = ["ссылк"];
+        const matches = linkMessage.filter(x => message.toLowerCase().includes(x)).length;
         return matches > 0;
     };
 

@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import { InlineVoiceOperation } from "./operations/InlineVoiceOperation.js";
 import { ReplyOperation } from "./operations/ReplyOperation.js";
 import { ImageDistortionOperation } from "./operations/ImageDistortionOperation.js";
-import { TreechChatLinkOperation } from "./operations/TreechChatLinkOperation.js";
+import { ShowChatLinkOperation } from "./operations/ShowChatLinkOperation.js";
 import { errorHandling } from "./middleware/ErrorHandlerMiddleware.js"
 dotenv.config();
 
@@ -19,12 +19,12 @@ if (process.env.REPLY_ENABLED === "true") {
     await new ReplyOperation().register(bot);
 }
 
-if (process.env.IMAGE_DISTORTION === "true") {
+if (process.env.IMAGE_DISTORTION_ENABLED === "true") {
     await new ImageDistortionOperation().register(bot);
 }
 
-if (process.env.TREECH_CHAT_LINK_ENABLED === "true") {
-    await new TreechChatLinkOperation().register(bot);
+if (process.env.SHOW_CHAT_LINK_ENABLED === "true") {
+    await new ShowChatLinkOperation().register(bot);
 }
 
 bot.catch(x => {

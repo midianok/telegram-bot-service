@@ -1,11 +1,11 @@
 import {Bot} from "grammy";
 import {Operation} from "./Operation";
 
-export class TreechChatLinkOperation implements Operation {
+export class ShowChatLinkOperation implements Operation {
 
     async register(bot: Bot): Promise<void> {
         bot.on("message").filter(
-            (ctx) => this.filter(ctx.message.text),
+            (ctx) => this.messageFilter(ctx.message.text),
             async (ctx, next) => {
                 const chat = await ctx.getChat();
                 await ctx.reply(`🔗*Ссылка на чат*: \`${chat.invite_link}\``, {parse_mode: "MarkdownV2"});
@@ -13,7 +13,7 @@ export class TreechChatLinkOperation implements Operation {
             })
     }
 
-    filter(message: string) : boolean {
+    messageFilter(message: string) : boolean {
         if (!message){
             return false;
         }
